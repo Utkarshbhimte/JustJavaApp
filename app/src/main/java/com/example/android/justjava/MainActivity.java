@@ -14,6 +14,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.appindexing.Action;
 import com.google.android.gms.appindexing.AppIndex;
@@ -28,11 +29,12 @@ import java.text.NumberFormat;
 public class MainActivity extends AppCompatActivity {
 
     CheckBox whippedCream, chocolate;
-    TextView priceTextView, quantityTextView , myText;
+    TextView priceTextView, quantityTextView, myText;
     Button myButton;
     EditText myInput;
     String name;
     int quantity = 0;
+    String priceMessage = "";
 
 
     @Override
@@ -43,20 +45,15 @@ public class MainActivity extends AppCompatActivity {
         chocolate = (CheckBox) findViewById(R.id.cream_coffee2);
         priceTextView = (TextView) findViewById(R.id.price_text_view);
         quantityTextView = (TextView) findViewById(R.id.quantity_text_view);
-        myButton = (Button)findViewById(R.id.order_button);
-        myText = (TextView)findViewById(R.id.or);
-        myInput = (EditText)findViewById(R.id.EnterName);
-
-
+        myButton = (Button) findViewById(R.id.order_button);
+        myText = (TextView) findViewById(R.id.or);
+        myInput = (EditText) findViewById(R.id.EnterName);
 
 
     }
 
 
-
-
-
-    public void submitOrder(View view) {
+    public void reviewOrder(View view) {
 
         boolean has_chocolate = chocolate.isChecked();
         boolean has_whippedCream = whippedCream.isChecked();
@@ -64,34 +61,62 @@ public class MainActivity extends AppCompatActivity {
         Editable nameEditable = myInput.getText();
         name = nameEditable.toString();
 
+        if (myInput.getText().equals(null)) {
+            Toast.makeText(MainActivity.this, "You forgot to enter your Name.",
+                    Toast.LENGTH_SHORT).show();
+        } else if (quantity == 0) {
+            Toast.makeText(MainActivity.this, "You haven't ordered anything..",
+                    Toast.LENGTH_SHORT).show();
+        } else {
 
+            priceMessage = "ORDER FOR " + name.toUpperCase() + "\n\n" + quantity + " CUPS OF COFFEE.\n" + "TOTAL BILL\t:\t₹ " + quantity * 10;
+            //the result is stored in a boolean called has_whippedCream from the method isChecked()
 
-        String priceMessage = "TOTAL AMOUNT =" + (quantity * 10) + "Rs" + "\n Thank You!";
-        //the result is stored in a boolean called has_wippedCream from the mathod isChecked()
+            if (has_whippedCream == true) {
 
-        if (has_whippedCream == true) {
+                priceMessage = "ORDER FOR " + name.toUpperCase() + "\n\n" + quantity + " CUPS OF COFFEE WITH WHIPPED CREAM.\n" + "TOTAL BILL\t:\t₹ " + quantity * 15;
+            }
+            if (has_chocolate == true) {
+                priceMessage = "ORDER FOR " + name.toUpperCase() + "\n\n" + quantity + " CUPS OF COFFEE WITH CHOCOLATE.\n" + "TOTAL BILL\t:\t₹ " + quantity * 15;
+                //displayMessage("TOTAL+"+quantity*15);
+            }
+            if (has_chocolate == true && has_whippedCream == true) {
+                priceMessage = "ORDER FOR " + name.toUpperCase() + "\n\n" + quantity + " CUP(S) OF COFFEE WITH WHIPPED CREAM & CHOCOLATE.\n" + "TOTAL BILL\t:\t₹ " + quantity * 35;
+            }
 
-            displayMessage(name+"\n"+"ADD WHIPPED CREAM?\n" + has_whippedCream + "\n" + "QUANTITY:" + quantity + "\n" + "TOTAL=" + quantity * 20);
+            priceMessage = priceMessage + "\n\n CLICK ON ORDER TO CONFIRM \n HAVE A NICE DAY!!";
+            displayMessage(priceMessage);
+
         }
-        if (has_chocolate == true) {
-            displayMessage(name+"\n"+"ADD CHOCOLATE?\n" + has_chocolate + "\n" + "QUANTITY:" + quantity + "\n" + "TOTAL=" + quantity * 15);
-            //displayMessage("TOTAL+"+quantity*15);
-        }
-        if (has_chocolate == true && has_whippedCream == true) {
-            displayMessage(name+"\n"+"ADD CHOCOLATE + WHIPPED CREAM?\n" + has_chocolate + "\n" + "QUANTITY:" + quantity + "\n" + "TOTAL=" + quantity * 35);
-        }
-         Intent intent = new Intent(Intent.ACTION_SENDTO);
+
+    }
+
+
+    public void submitOrder(View view) {
+
+        String emailString = "NAME : " + name.toUpperCase() + "\nQUANTITY : " + quantity + "\nWHIPPED CREAM : " + whippedCream.isChecked() + "\nCHOCOLATE : " + chocolate.isChecked();
+        Intent intent = new Intent(Intent.ACTION_SENDTO);
         intent.setData(Uri.parse("mailto:")); // only email apps should handle this
         intent.putExtra(Intent.EXTRA_SUBJECT,
                 getString(R.string.order_summary_email_subject, name));
-        intent.putExtra(Intent.EXTRA_TEXT, priceMessage);
+        intent.putExtra(Intent.EXTRA_TEXT, emailString);
 
         if (intent.resolveActivity(getPackageManager()) != null) {
             startActivity(intent);
         }
     }
 
+    public void submitOrderW(View view) {
 
+        String emailString = "NAME : " + name.toUpperCase() + "\nQUANTITY : " + quantity + "\nWHIPPED CREAM : " + whippedCream.isChecked() + "\nCHOCOLATE : " + chocolate.isChecked();
+
+        Uri uri = Uri.parse("smsto:" + "9108908807");
+        Intent i = new Intent(Intent.ACTION_SENDTO, uri);
+        i.putExtra("sms_body", "TExt");
+        i.setPackage("com.whatsapp");
+        startActivity(i);
+
+    }
 
 
     //display(quantity);
@@ -99,12 +124,12 @@ public class MainActivity extends AppCompatActivity {
 
 
     public void increment(View view) {
-        if (quantity < 100) {
+        if (quantity < 99) {
             quantity += 1;
 
             display(quantity);
         } else
-            displayMessage("invalid");
+            displayMessage("SORRY, WE WON'T BE ABLE TO DELIVER SUCH A LARGE ORDER");
 
     }
 
@@ -114,7 +139,7 @@ public class MainActivity extends AppCompatActivity {
             display(quantity);
 
         } else
-            displayMessage("invalid");
+            myButton.setEnabled(false);
     }
 
     /**
@@ -125,13 +150,6 @@ public class MainActivity extends AppCompatActivity {
         quantityTextView.setText("" + number);
     }
 
-    /**
-     * This method displays the given price on the screen.
-     */
-    private void displayPrice(int number) {
-
-        priceTextView.setText(NumberFormat.getCurrencyInstance().format(number));
-    }
 
     /**
      * This method displays the given text on the screen.
@@ -140,10 +158,5 @@ public class MainActivity extends AppCompatActivity {
 
         priceTextView.setText(message);
     }
-
-
-
-
-
 
 }
