@@ -1,5 +1,6 @@
 package com.example.android.justjava;
 
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -8,6 +9,7 @@ import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
@@ -28,11 +30,12 @@ import java.text.NumberFormat;
  */
 public class MainActivity extends AppCompatActivity {
 
+    public static final String DEFAULT = "N/A";
     CheckBox whippedCream, chocolate;
     TextView priceTextView, quantityTextView, myText;
     Button myButton;
     EditText myInput;
-    String name;
+    String name = DEFAULT;
     int quantity = 0;
     String priceMessage = "";
 
@@ -61,7 +64,8 @@ public class MainActivity extends AppCompatActivity {
         Editable nameEditable = myInput.getText();
         name = nameEditable.toString();
 
-        if (myInput.getText().equals(null)) {
+
+        if (name.matches("")){
             Toast.makeText(MainActivity.this, "You forgot to enter your Name.",
                     Toast.LENGTH_SHORT).show();
         } else if (quantity == 0) {
@@ -94,6 +98,9 @@ public class MainActivity extends AppCompatActivity {
 
     public void submitOrder(View view) {
 
+        Toast.makeText(MainActivity.this, "Opening your Email App. Please Wait.",
+                Toast.LENGTH_SHORT).show();
+
         String emailString = "NAME : " + name.toUpperCase() + "\nQUANTITY : " + quantity + "\nWHIPPED CREAM : " + whippedCream.isChecked() + "\nCHOCOLATE : " + chocolate.isChecked();
         Intent intent = new Intent(Intent.ACTION_SENDTO);
         intent.setData(Uri.parse("mailto:")); // only email apps should handle this
@@ -110,6 +117,8 @@ public class MainActivity extends AppCompatActivity {
 
         String emailString = "NAME : " + name.toUpperCase() + "\nQUANTITY : " + quantity + "\nWHIPPED CREAM : " + whippedCream.isChecked() + "\nCHOCOLATE : " + chocolate.isChecked();
 
+        copyToClipboard(emailString);
+
         Uri uri = Uri.parse("smsto:" + "9108908807");
         Intent i = new Intent(Intent.ACTION_SENDTO, uri);
         i.putExtra("sms_body", "TExt");
@@ -118,7 +127,25 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-
+    public void copyToClipboard(String copyText) {
+        int sdk = android.os.Build.VERSION.SDK_INT;
+        if (sdk < android.os.Build.VERSION_CODES.HONEYCOMB) {
+            android.text.ClipboardManager clipboard = (android.text.ClipboardManager)
+                    getSystemService(Context.CLIPBOARD_SERVICE);
+            clipboard.setText(copyText);
+        } else {
+            android.content.ClipboardManager clipboard = (android.content.ClipboardManager)
+                    getSystemService(Context.CLIPBOARD_SERVICE);
+            android.content.ClipData clip = android.content.ClipData
+                    .newPlainText("Your Order", copyText);
+            clipboard.setPrimaryClip(clip);
+        }
+        Toast toast = Toast.makeText(getApplicationContext(),
+                "Your Order is copied to Clipboard. Opening Whatsapp. Please Wait.", Toast.LENGTH_SHORT);
+        toast.setGravity(Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL, 0, 0);
+        toast.show();
+        //displayAlert("Your OTP is copied");
+    }
     //display(quantity);
     //displayMessage (priceMessage) ; adding in the order summary
 

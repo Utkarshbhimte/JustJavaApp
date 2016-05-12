@@ -24,7 +24,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:background="#fff"
-                android:padding="8dp">
+                android:padding="8dp"
+                android:orientation="horizontal">
 
                 <EditText
                     android:id="@+id/EnterName"
@@ -35,7 +36,9 @@
                     android:imeOptions="actionSend"
                     android:inputType="text"
                     android:textAllCaps="true"
-                    android:textSize="32dp"/>
+                    android:textSize="32dp"
+                    android:layout_weight="1"/>
+
 
             </LinearLayout>
 
@@ -120,7 +123,7 @@
                         android:id="@+id/dec"
                         android:layout_width="48dp"
                         android:layout_height="48dp"
-                        android:background="@color/primary"
+                        android:background="@drawable/custom_button"
                         android:onClick="decrement"
                         android:text="-"
                         android:textColor="@color/icons"
@@ -144,7 +147,7 @@
                         android:layout_width="48dp"
                         android:layout_height="48dp"
                         android:height="48dp"
-                        android:background="@color/primary"
+                        android:background="@drawable/custom_button"
                         android:onClick="increment"
                         android:elevation="2dp"
                         android:text="+"
@@ -161,7 +164,7 @@
                         android:id="@+id/review_button"
                         android:layout_width="120dp"
                         android:layout_height="wrap_content"
-                        android:background="@color/primary"
+                        android:background="@drawable/custom_button"
                         android:onClick="reviewOrder"
                         android:elevation="2dp"
                         android:padding="2dp"
@@ -219,7 +222,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="16dp"
                 android:layout_marginRight="16dp"
-                android:background="@color/primary"
+                android:background="@drawable/custom_button"
                 android:elevation="2dp"
                 android:onClick="submitOrderW"
                 android:text="Order"
@@ -231,7 +234,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="16dp"
                 android:layout_marginRight="16dp"
-                android:background="@color/primary"
+                android:background="@drawable/custom_button"
                 android:elevation="2dp"
                 android:onClick="submitOrder"
                 android:text="Order"
